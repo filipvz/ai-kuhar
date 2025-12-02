@@ -4,7 +4,7 @@ import os
 
 # --- POSTAVKE ---
 
-my_api_key = "os.getenv("GROQ_API_KEY")"
+my_api_key = os.getenv("GROQ_API_KEY")
 
 st.set_page_config(page_title="Varaždinski brzi kuhar", page_icon="🍳")
 
@@ -68,4 +68,5 @@ if gumb:
             st.success("Evo ideje!")
             st.markdown(recept)
     else:
+
         st.warning(" Frižider ti je prazan? Upiši nešto!")
