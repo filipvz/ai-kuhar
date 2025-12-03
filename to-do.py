@@ -27,7 +27,7 @@ with col1:
 
 # --- LOGIKA ---
 def generiraj_recept(popis_namirnica):
-    if "ZALIJEPI" in my_api_key:
+    if not in my_api_key:
         return "⚠️ Vrati svoj API ključ u kod!"
     
     try:
@@ -70,4 +70,5 @@ if gumb:
     else:
 
         st.warning(" Frižider ti je prazan? Upiši nešto!")
+
 
