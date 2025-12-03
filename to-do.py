@@ -4,7 +4,7 @@ import os
 
 # --- POSTAVKE ---
 
-my_api_key = os.getenv("GROQ_API_KEY")
+my_api_key = st.secrets["GROQ_API_KEY"]
 
 st.set_page_config(page_title="Varaždinski brzi kuhar", page_icon="🍳")
 
@@ -14,48 +14,50 @@ st.caption("Powered by Groq (Llama 3.3)")
 st.caption("Made by Filip (20% Digital)")
 
 
-st.markdown("### Što sve imaš danas?")
-namirnice_input = st.text_area(
-    "Upiši sve namirnice odvojene zarezom:", 
-    placeholder="npr. Jaja, luk, špek, pola paprike, vrhnje, stari kruh...",
-    height=100
-)
+col1,col2=st.columns([2,1])
 
-col1, col2 = st.columns([1, 2]) # Gumb će biti u užem stupcu
 with col1:
-    gumb = st.button("Generiraj recept 🚀", type="primary")
+    namirnice_input=st.text_input("Što imate u frižideru danas?", placeholder="npr. jaja, piletina, kobasice...")
+
+with col2:
+    vrsta_obroka=st.selectbox(
+        "Koja vrsta obroka?",
+        ("Svejedno","Doručak","Ručak","Večera","Desert")
+    )
+    st.markdown("---")
+
+gumb = st.button("Generiraj recept 🚀", type="primary")
 
 # --- LOGIKA ---
-def generiraj_recept(popis_namirnica):
+def generiraj_recept(namirnice,obrok):
     if not my_api_key:
-        return "⚠️ nema API ključa!"
+        return "⚠️ nema API ključa !"
     
     try:
         client = Groq(api_key=my_api_key)
         
         # Prompt je sada prilagođen za listu
         prompt = f"""
-        Ti si vrhunski chef. Korisnik ima ove namirnice na raspolaganju:
-        {popis_namirnica}
-        
-        Zadatak:
-        1. Smisli JEDAN najbolji mogući recept koristeći ŠTO VIŠE (ali ne nužno sve) navedene namirnice.
-        2. Ako neka namirnica baš ne paše, ignoriraj ju.
-        3. Recept mora biti na hrvatskom jeziku.
-        4. Format: Naslov, Sastojci, Priprema (korak po korak). Bez filozofiranja.
+        Ti si vrhunski chef. Korisnik ima namirnice:{namirnice}
+        Korisnik želi pripremiti:{obrok}.
+        Napravi točno JEDAN recept na hrvatskom jeziku.
+        Samo naslov, sastojci i priprema.
         """
-        
-        chat_completion = client.chat.completions.create(
+        chat_completetion=client.chat.completions.create(
             messages=[
                 {
-                    "role": "user",
-                    "content": prompt,
+                    "role":"user",
+                    "content":prompt,
                 }
             ],
-            model="llama-3.3-70b-versatile", 
+            model="llama-3.3-70b-versatile",
+            temperature=0.1
+
         )
-        return chat_completion.choices[0].message.content
-        
+        return chat_completetion.choices[0].message.content
+
+
+
     except Exception as e:
         return f"Greška: {str(e)}"
 
@@ -63,12 +65,11 @@ def generiraj_recept(popis_namirnica):
 if gumb:
     if namirnice_input:
         with st.spinner('Kombiniram sastojke...'):
-            recept = generiraj_recept(namirnice_input)
+            recept = generiraj_recept(namirnice_input, vrsta_obroka)
             st.markdown("---")
             st.success("Evo ideje!")
             st.markdown(recept)
     else:
-
         st.warning(" Frižider ti je prazan? Upiši nešto!")
 
 
