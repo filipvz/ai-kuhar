@@ -2,13 +2,13 @@ import streamlit as st
 from groq import Groq
 import os
 
-# --- 1. POSTAVKE I KLJUČEVI ---
+# ---  POSTAVKE I KLJUČEVI ---
 my_api_key = st.secrets["GROQ_API_KEY"]
 
 st.set_page_config(page_title="AI Kuhar")
 
 
-# --- 2. RJEČNIK S TEKSTOVIMA (Sve na jednom mjestu) ---
+# ---  RJEČNIK S TEKSTOVIMA  ---
 TEKSTOVI = {
     "HR": {
         "title": "AI Kuhar",
@@ -48,7 +48,7 @@ TEKSTOVI = {
     }
 }
 
-# --- 3. LOGIKA ZA JEZIK (MEMORIJA) ---
+# ---  LOGIKA ZA JEZIK (MEMORIJA) ---
 if 'jezik' not in st.session_state:
     st.session_state.jezik = 'HR' # Početni jezik
 
@@ -69,7 +69,7 @@ if odabrani_jezik != st.session_state.jezik:
 t = TEKSTOVI[st.session_state.jezik]
 
 
-# --- 4. FUNKCIJA (MOZAK) ---
+# ---  FUNKCIJA (MOZAK) ---
 def generiraj_recept(namirnice, vrsta_obroka, jezik):
     if not my_api_key:
         return "⚠️ Nema API ključa!" if jezik == 'HR' else "⚠️ Missing API Key!"
@@ -102,7 +102,7 @@ def generiraj_recept(namirnice, vrsta_obroka, jezik):
         return f"Error: {str(e)}"
 
 
-# --- 5. PRIKAZ SUČELJA (UI) ---
+# ---  PRIKAZ SUČELJA (UI) ---
 st.title(t["title"])
 st.caption(t["caption"])
 st.info(t["instructions"])
@@ -120,7 +120,7 @@ with col2:
 st.markdown("")
 gumb = st.button(t["button"], type="primary", use_container_width=True)
 
-# --- 6. AKCIJA ---
+# ---  AKCIJA ---
 if gumb:
     if namirnice_input:
         with st.spinner(t["spinner"]):
@@ -133,7 +133,7 @@ if gumb:
     else:
         st.warning(t["warning"])
 
-# --- 7. FOOTER (DONACIJE) ---
+# --- FOOTER (DONACIJE) ---
 st.write("")
 st.write("")
 st.write("")
@@ -146,7 +146,7 @@ col_l, col_s, col_d = st.columns([1, 2, 1])
 with col_s:
     st.write(t["footer_text"])
     st.link_button(t["donate_button"], url=paypal_url)
-#--- POTPIS AUTORA ---
+#--- POTPIS AUTORA i VERZIJA  ---
 st.write("") # Još malo razmaka
 st.markdown(
     f"""<div style='display: block;text-align: center;width:100%: color: gray; font-size: small;'>{t['credits']} 
@@ -155,3 +155,4 @@ st.markdown(
     """,
     unsafe_allow_html=True
 )
+
