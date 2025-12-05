@@ -12,6 +12,7 @@ st.set_page_config(page_title="Varaždinski brzi kuhar", page_icon="🍳")
 st.title("🍳 AI kuhar ")
 st.caption("Powered by Groq (Llama 3.3)")
 st.caption("Made by Filip (20% Digital)")
+st.caption("Version: Beta")
 
 
 col1,col2=st.columns([2,1])
@@ -73,5 +74,35 @@ if gumb:
         st.warning(" Frižider ti je prazan? Upiši nešto!")
 
 
+
+st.markdown("-----")
+paypal_url="https://paypal.me/filipvz"
+col_lijevo,col_sredina,col_desno=st.columns([1,2,1])
+
+with col_sredina:
+    st.write("")
+    st.write("")
+    st.write("")
+    st.write("")
+    st.write("")
+    st.write("")
+    st.write("")
+    st.write("")
+    st.write("")
+    st.write("")
+    st.write("")
+    st.write("")
+    st.write("")
+    st.write("")
+    st.write("")
+    st.write("")
+    st.write("")
+    st.write("")
+    st.write("")
+    st.write("")
+    st.write("")
+    st.write("Sviđa ti se kuhar? Podrži ga!!!")
+    
+    st.link_button("☕ Kupi mi kavu (Doniraj)", url=paypal_url)
 
 
