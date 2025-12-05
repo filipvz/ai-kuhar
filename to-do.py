@@ -13,7 +13,7 @@ TEKSTOVI = {
     "HR": {
         "title": "AI Kuhar",
         "caption": "Pokreće Groq (Llama 3.3)",
-        "instructions":"Upišite namirnice koje imate kod kuće (odvojite zarezom), odaberite vrstu jela i AI će ti smisliti recept!",
+        "instructions":"Upišite namirnice koje imate kod kuće (odvoji zarezom), odaberite vrstu jela i AI će ti smisliti recept!",
         "language_label": "Jezik / Language:",
         "input_label": "Što imaš u frižideru?",
         "placeholder": "npr. jaja, špek, luk",
@@ -25,7 +25,8 @@ TEKSTOVI = {
         "warning": "Frižider ti je prazan? Upiši nešto!",
         "footer_text": "Sviđa ti se kuhar? Podrži ga!!!",
         "donate_button": "☕ Kupi mi kavu (Doniraj)",
-        "credits":"Made by Filip (20% Digital)"
+        "credits":"Made by Filip (20% Digital)",
+        "version":"Version 0.9 beta"
     },
     "EN": {
         "title": "The AI Chef",
@@ -42,7 +43,8 @@ TEKSTOVI = {
         "warning": "Fridge empty? Type something!",
         "footer_text": "Like the Chef? Support him!",
         "donate_button": "☕ Buy me a coffee (Donate)",
-        "credits":"Made by Filip (20% Digital)"
+        "credits":"Made by Filip (20% Digital)",
+        "version":"Version 0.9 beta"
     }
 }
 
@@ -147,7 +149,9 @@ with col_s:
 #--- POTPIS AUTORA ---
 st.write("") # Još malo razmaka
 st.markdown(
-    f"<div style='text-align: center; color: gray; font-size: small;'>{t['credits']}</div>", 
+    f"""<div style='display: block;text-align: center;width:100%: color: gray; font-size: small;'>{t['credits']} 
+    <br>
+    <span style="font-size:0.8em;opacity:0.7;">{t["version"]}</span></div>
+    """,
     unsafe_allow_html=True
 )
-
