@@ -13,6 +13,7 @@ TEKSTOVI = {
     "HR": {
         "title": "AI Kuhar",
         "caption": "Pokreće Groq (Llama 3.3)",
+        "instructions":"Upišite namirnice koje imate kod kuće (odvoji zarezom), odaberite vrstu jela i AI će ti smisliti recept!",
         "language_label": "Jezik / Language:",
         "input_label": "Što imaš u frižideru?",
         "placeholder": "npr. jaja, špek, luk",
@@ -23,12 +24,13 @@ TEKSTOVI = {
         "success": "Dobar tek!",
         "warning": "Frižider ti je prazan? Upiši nešto!",
         "footer_text": "Sviđa ti se kuhar? Podrži ga!!!",
-        "donate_button": "Kupi mi kavu (Doniraj)",
+        "donate_button": "☕ Kupi mi kavu (Doniraj)",
         "credits":"Made by Filip (20% Digital)"
     },
     "EN": {
         "title": "The AI Chef",
         "caption": "Powered by Groq (Llama 3.3)",
+        "instructions": "Enter ingredients you have at home (separated by commas), choose a meal type, and let AI create a recipe for you!",
         "language_label": "Language / Jezik:",
         "input_label": "What's in your fridge?",
         "placeholder": "e.g. eggs, bacon, onion",
@@ -39,7 +41,7 @@ TEKSTOVI = {
         "success": "Bon appétit!",
         "warning": "Fridge empty? Type something!",
         "footer_text": "Like the Chef? Support him!",
-        "donate_button": "Buy me a coffee (Donate)",
+        "donate_button": "☕ Buy me a coffee (Donate)",
         "credits":"Made by Filip (20% Digital)"
     }
 }
@@ -101,6 +103,8 @@ def generiraj_recept(namirnice, vrsta_obroka, jezik):
 # --- 5. PRIKAZ SUČELJA (UI) ---
 st.title(t["title"])
 st.caption(t["caption"])
+st.info(t["instructions"])
+
 st.markdown("---")
 
 col1, col2 = st.columns([2, 1])
@@ -146,4 +150,3 @@ st.markdown(
     f"<div style='text-align: center; color: gray; font-size: small;'>{t['credits']}</div>", 
     unsafe_allow_html=True
 )
-
