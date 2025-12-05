@@ -5,13 +5,13 @@ import os
 # --- 1. POSTAVKE I KLJUČEVI ---
 my_api_key = st.secrets["GROQ_API_KEY"]
 
-st.set_page_config(page_title="AI Kuhar", page_icon="🍳")
+st.set_page_config(page_title="AI Kuhar")
 
 
 # --- 2. RJEČNIK S TEKSTOVIMA (Sve na jednom mjestu) ---
 TEKSTOVI = {
     "HR": {
-        "title": "🍳 AI Kuhar",
+        "title": "AI Kuhar",
         "caption": "Pokreće Groq (Llama 3.3)",
         "language_label": "Jezik / Language:",
         "input_label": "Što imaš u frižideru?",
@@ -23,11 +23,11 @@ TEKSTOVI = {
         "success": "Dobar tek!",
         "warning": "Frižider ti je prazan? Upiši nešto!",
         "footer_text": "Sviđa ti se kuhar? Podrži ga!!!",
-        "donate_button": "☕ Kupi mi kavu (Doniraj)",
+        "donate_button": "Kupi mi kavu (Doniraj)",
         "credits":"Made by Filip (20% Digital)"
     },
     "EN": {
-        "title": "🍳 The AI Chef",
+        "title": "The AI Chef",
         "caption": "Powered by Groq (Llama 3.3)",
         "language_label": "Language / Jezik:",
         "input_label": "What's in your fridge?",
@@ -39,7 +39,7 @@ TEKSTOVI = {
         "success": "Bon appétit!",
         "warning": "Fridge empty? Type something!",
         "footer_text": "Like the Chef? Support him!",
-        "donate_button": "☕ Buy me a coffee (Donate)",
+        "donate_button": "Buy me a coffee (Donate)",
         "credits":"Made by Filip (20% Digital)"
     }
 }
@@ -50,7 +50,7 @@ if 'jezik' not in st.session_state:
 
 # Radio gumb na vrhu
 odabrani_jezik = st.radio(
-    "🌎 " + TEKSTOVI[st.session_state.jezik]["language_label"],
+    TEKSTOVI[st.session_state.jezik]["language_label"],
     ('HR', 'EN'),
     horizontal=True,
     index=0 if st.session_state.jezik == 'HR' else 1
@@ -146,3 +146,4 @@ st.markdown(
     f"<div style='text-align: center; color: gray; font-size: small;'>{t['credits']}</div>", 
     unsafe_allow_html=True
 )
+
