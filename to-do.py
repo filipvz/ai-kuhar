@@ -13,7 +13,7 @@ TEKSTOVI = {
     "HR": {
         "title": "AI Kuhar",
         "caption": "Pokreće Groq (Llama 3.3)",
-        "instructions":"Upišite namirnice koje imate kod kuće (odvoji zarezom), odaberite vrstu jela i AI će ti smisliti recept!",
+        "instructions":"Upišite namirnice koje imate kod kuće (odvojite zarezom), odaberite vrstu jela i AI će ti smisliti recept!",
         "language_label": "Jezik / Language:",
         "input_label": "Što imaš u frižideru?",
         "placeholder": "npr. jaja, špek, luk",
@@ -150,3 +150,4 @@ st.markdown(
     f"<div style='text-align: center; color: gray; font-size: small;'>{t['credits']}</div>", 
     unsafe_allow_html=True
 )
+
