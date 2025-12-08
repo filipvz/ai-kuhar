@@ -52,7 +52,7 @@ TEKSTOVI = {
 
 # --- LOGIKA ZA JEZIK (MEMORIJA) ---
 if 'jezik' not in st.session_state:
-    st.session_state.jezik = 'HR' # Početni jezik
+    st.session_state.jezik = 'EN' # Početni jezik
 
 # Radio gumb na vrhu
 odabrani_jezik = st.radio(
@@ -163,4 +163,5 @@ st.markdown(
     """,
     unsafe_allow_html=True
 )
+
 
