@@ -40,7 +40,7 @@ TEKSTOVI = {
         "meal_options": ["Any", "Breakfast", "Lunch", "Dinner", "Dessert"],
         "button": "Generate Recipe",
         "spinner": "Cooking up magic...",
-        "dowload_button":"Download Recipe (.txt)",
+        "download_button":"Download Recipe (.txt)",
         "success": "Bon appétit!",
         "warning": "Fridge empty? Type something!",
         "footer_text": "Like the Chef? Support him!",
@@ -163,3 +163,4 @@ st.markdown(
     """,
     unsafe_allow_html=True
 )
+
