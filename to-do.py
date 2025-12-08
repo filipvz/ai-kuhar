@@ -2,13 +2,13 @@ import streamlit as st
 from groq import Groq
 import os
 
-# ---  POSTAVKE I KLJUČEVI ---
+#  POSTAVKE I KLJUČEVI ---
 my_api_key = st.secrets["GROQ_API_KEY"]
 
 st.set_page_config(page_title="AI Kuhar")
 
 
-# ---  RJEČNIK S TEKSTOVIMA  ---
+#  RJEČNIK S TEKSTOVIMA (Sve na jednom mjestu) ---
 TEKSTOVI = {
     "HR": {
         "title": "AI Kuhar",
@@ -21,6 +21,7 @@ TEKSTOVI = {
         "meal_options": ["Svejedno", "Doručak", "Ručak", "Večera", "Desert"],
         "button": "Generiraj recept",
         "spinner": "Palim digitalnu pečnicu...",
+        "download_button":"Preuzmi recept (.txt)",
         "success": "Dobar tek!",
         "warning": "Frižider ti je prazan? Upiši nešto!",
         "footer_text": "Sviđa ti se kuhar? Podrži ga!!!",
@@ -39,6 +40,7 @@ TEKSTOVI = {
         "meal_options": ["Any", "Breakfast", "Lunch", "Dinner", "Dessert"],
         "button": "Generate Recipe",
         "spinner": "Cooking up magic...",
+        "dowload_button":"Download Recipe (.txt)",
         "success": "Bon appétit!",
         "warning": "Fridge empty? Type something!",
         "footer_text": "Like the Chef? Support him!",
@@ -48,7 +50,7 @@ TEKSTOVI = {
     }
 }
 
-# ---  LOGIKA ZA JEZIK (MEMORIJA) ---
+# --- LOGIKA ZA JEZIK (MEMORIJA) ---
 if 'jezik' not in st.session_state:
     st.session_state.jezik = 'HR' # Početni jezik
 
@@ -102,7 +104,7 @@ def generiraj_recept(namirnice, vrsta_obroka, jezik):
         return f"Error: {str(e)}"
 
 
-# ---  PRIKAZ SUČELJA (UI) ---
+#  PRIKAZ SUČELJA (UI) 
 st.title(t["title"])
 st.caption(t["caption"])
 st.info(t["instructions"])
@@ -120,7 +122,7 @@ with col2:
 st.markdown("")
 gumb = st.button(t["button"], type="primary", use_container_width=True)
 
-# ---  AKCIJA ---
+# --- 6. AKCIJA ---
 if gumb:
     if namirnice_input:
         with st.spinner(t["spinner"]):
@@ -130,6 +132,12 @@ if gumb:
             st.markdown("---")
             st.success(t["success"])
             st.markdown(recept)
+            st.download_button(
+                label=t["download_button"],
+                data=recept,
+                file_name="AI_Kuhar_Recept.txt",
+                mime="text/plain"
+            )
     else:
         st.warning(t["warning"])
 
@@ -146,8 +154,8 @@ col_l, col_s, col_d = st.columns([1, 2, 1])
 with col_s:
     st.write(t["footer_text"])
     st.link_button(t["donate_button"], url=paypal_url)
-#--- POTPIS AUTORA i VERZIJA  ---
-st.write("") # Još malo razmaka
+#--- POTPIS AUTORA i Verzija ---
+st.write("") 
 st.markdown(
     f"""<div style='display: block;text-align: center;width:100%: color: gray; font-size: small;'>{t['credits']} 
     <br>
@@ -155,4 +163,3 @@ st.markdown(
     """,
     unsafe_allow_html=True
 )
-
