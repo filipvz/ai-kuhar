@@ -31,7 +31,12 @@ TEKSTOVI = {
         "footer_text": "Sviđa ti se kuhar? Podrži ga!!!",
         "donate_button": "☕ Kupi mi kavu (Doniraj)",
         "credits":"Made by Filip (20% Digital)",
-        "version":"Version 0.9 beta"
+        "version":"Version 0.9 beta",
+        "ai_prompt":"""
+        Ti si iskusni kuhar. Korisnik ima: {namirnice}. Želi: {vrsta_obroka}.
+        Zadatak: Napravi JEDAN recept na hrvatskom jeziku.
+        Struktura: Naslov, Sastojci, Priprema. Ne izmišljaj riječi.
+        """ 
     },
     "EN": {
         "title": "The AI Chef",
@@ -50,7 +55,12 @@ TEKSTOVI = {
         "footer_text": "Like the Chef? Support him!",
         "donate_button": "☕ Buy me a coffee (Donate)",
         "credits":"Made by Filip (20% Digital)",
-        "version":"Version 0.9 beta"
+        "version":"Version 0.9 beta",
+        "ai_prompt":"""
+        You are an experienced chef. User has: {namirnice}. Wants: {vrsta_obroka}.
+        Task: Create ONE recipe in English.
+        Structure: Title, Ingredients, Instructions. Use standard terminology."""
+
     }
 }
 
@@ -83,19 +93,11 @@ def generiraj_recept(namirnice, vrsta_obroka, jezik):
     try:
         client = Groq(api_key=my_api_key)
 
-        # Prilagođavamo prompt ovisno o jeziku
-        if jezik == 'HR':
-            prompt = f"""
-            Ti si iskusni kuhar. Korisnik ima: {namirnice}. Želi: {vrsta_obroka}.
-            Zadatak: Napravi JEDAN recept na hrvatskom jeziku.
-            Struktura: Naslov, Sastojci, Priprema. Ne izmišljaj riječi.
-            """
-        else:
-            prompt = f"""
-            You are an experienced chef. User has: {namirnice}. Wants: {vrsta_obroka}.
-            Task: Create ONE recipe in English.
-            Structure: Title, Ingredients, Instructions. Use standard terminology.
-            """
+        t_local=TEKSTOVI[jezik]
+        prompt = t_local["ai_prompt"].format(namirnice=namirnice, vrsta_obroka=vrsta_obroka)
+            
+        
+
 
         chat_completion = client.chat.completions.create(
             messages=[{"role": "user", "content": prompt}],
