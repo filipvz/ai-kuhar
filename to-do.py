@@ -1,9 +1,13 @@
 import streamlit as st
-from groq import Groq
-import os
+from groq import Groq,AuthenticationError, RateLimitError,APIConnectionError,APIError,APITimeoutError
+
 
 #  POSTAVKE I KLJUČEVI ---
-my_api_key = st.secrets["GROQ_API_KEY"]
+try:
+     my_api_key = st.secrets["GROQ_API_KEY"]
+except KeyError:
+     st.error("API ključ nije pronađeni")
+     st.stop()
 
 st.set_page_config(page_title="AI Kuhar")
 
@@ -75,10 +79,10 @@ t = TEKSTOVI[st.session_state.jezik]
 def generiraj_recept(namirnice, vrsta_obroka, jezik):
     if not my_api_key:
         return "⚠️ Nema API ključa!" if jezik == 'HR' else "⚠️ Missing API Key!"
-    
+
     try:
         client = Groq(api_key=my_api_key)
-        
+
         # Prilagođavamo prompt ovisno o jeziku
         if jezik == 'HR':
             prompt = f"""
@@ -92,13 +96,23 @@ def generiraj_recept(namirnice, vrsta_obroka, jezik):
             Task: Create ONE recipe in English.
             Structure: Title, Ingredients, Instructions. Use standard terminology.
             """
-        
+
         chat_completion = client.chat.completions.create(
             messages=[{"role": "user", "content": prompt}],
             model="llama-3.3-70b-versatile",
             temperature=0.1
         )
         return chat_completion.choices[0].message.content
+    except AuthenticationError as e:
+        return "Neispravan API ključ!" if jezik == 'HR' else "Invalid API Key!"
+    except RateLimitError as e:
+        return "Previše zahtjeva, pričekaj minutu!" if jezik == 'HR' else "Too many requests, wait a minute!"
+    except APIConnectionError as e:
+        return "Nema interneta ili server nedostupan!" if jezik == 'HR' else "No internet or server unavailable!"
+    except APITimeoutError as e:
+        return "Zahtjev predugo traje!" if jezik == 'HR' else "Request took too long!"
+    except APIError as e:
+        return "Problem sa API-jem!" if jezik == 'HR' else "Problem with API!"
         
     except Exception as e:
         return f"Error: {str(e)}"
@@ -128,7 +142,7 @@ if gumb:
         with st.spinner(t["spinner"]):
             # Šaljemo i jezik u funkciju!
             recept = generiraj_recept(namirnice_input, vrsta_obroka, st.session_state.jezik)
-            
+
             st.markdown("---")
             st.success(t["success"])
             st.markdown(recept)
@@ -157,11 +171,9 @@ with col_s:
 #--- POTPIS AUTORA i Verzija ---
 st.write("") 
 st.markdown(
-    f"""<div style='display: block;text-align: center;width:100%: color: gray; font-size: small;'>{t['credits']} 
+    f"""<div style='display: block;text-align: center;width:100%; color: gray; font-size: small;'>{t['credits']} 
     <br>
     <span style="font-size:0.8em;opacity:0.7;">{t["version"]}</span></div>
     """,
     unsafe_allow_html=True
 )
-
-
