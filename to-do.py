@@ -39,6 +39,12 @@ TEKSTOVI = {
         Naslov:
         Sastojci:
         Priprema:
+        Nutritivne informacije( okvirno po porciji):
+        -Kalorije:
+        -Proteini:
+        -Ugljeni hidrati:
+        -Masti:
+        Ako procjena nije sigurna, napiši da je okvirna
         Koristi samo standardne kulinarske izraze.
         Ne dodavaj uvod, napomene ni dodatne sekcije.
                
@@ -69,6 +75,12 @@ TEKSTOVI = {
         Title:
         Ingredients:
         Instructions:
+        Nutritional information (per serving):
+        -Calories:
+        -Proteins:
+        -Carbs:
+        -Fats:
+        If uncertain,clearly state it is an estimate.
         Use standard culinary terminology only.
         Do not add intro text,notes, or extra sections.
         """
@@ -220,9 +232,4 @@ st.markdown(
     """,
     unsafe_allow_html=True
 )
-
-
-
-
-
 
