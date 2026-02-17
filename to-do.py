@@ -177,7 +177,7 @@ if gumb:
 
             st.markdown("---")
             st.success(t["success"])
-            st.markdown(recept)
+            st.text(recept)
             st.download_button(
                 label=t["download_button"],
                 data=recept,
@@ -220,6 +220,7 @@ st.markdown(
     """,
     unsafe_allow_html=True
 )
+
 
 
 
