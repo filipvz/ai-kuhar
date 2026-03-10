@@ -6,10 +6,10 @@ from groq import Groq,AuthenticationError, RateLimitError,APIConnectionError,API
 try:
      my_api_key = st.secrets["GROQ_API_KEY"]
 except KeyError:
-     st.error("API ključ nije pronađen")
+     st.error("API ključ nije pronađeni")
      st.stop()
 
-st.set_page_config(page_title="AI Kuhar")
+st.set_page_config(page_title="AI Kuhar",page_icon="👨‍🍳")
 
 
 #  RJEČNIK S TEKSTOVIMA (Sve na jednom mjestu) ---
@@ -24,14 +24,14 @@ TEKSTOVI = {
         "meal_label": "Koji obrok želiš?",
         "meal_options": ["Svejedno", "Doručak", "Ručak", "Večera", "Desert"],
         "button": "Generiraj recept",
-        "spinner": "Palim digitalnu pećnicu...",
+        "spinner": "Palim digitalnu pečnicu...",
         "download_button":"Preuzmi recept (.txt)",
         "success": "Dobar tek!",
         "warning": "Frižider ti je prazan? Upiši nešto!",
         "footer_text": "Sviđa ti se kuhar? Podrži ga!!!",
         "donate_button": "☕ Kupi mi kavu (Doniraj)",
         "credits":"Made by Filip (20% Digital)",
-        "version":"Version 1.0 Stable",
+        "version":"Version 0.9 beta",
         "ai_prompt":"""
         Ti si iskusni kuhar. Korisnik ima: {namirnice}. Želi: {vrsta_obroka}.
         Napiši točno JEDAN recept na hrvatskom jeziku.
@@ -39,15 +39,14 @@ TEKSTOVI = {
         Naslov:
         Sastojci:
         Priprema:
-        Nutritivne informacije( okvirno po porciji):
+        Nutritivne informacije (okvirno po porciji):
         -Kalorije:
         -Proteini:
         -Ugljeni hidrati:
         -Masti:
-        Ako procjena nije sigurna, napiši da je okvirna
+        Ako procjena nije sigurna, napiši da je okvirna.
         Koristi samo standardne kulinarske izraze.
         Ne dodavaj uvod, napomene ni dodatne sekcije.
-               
         """ 
     },
     "EN": {
@@ -67,7 +66,7 @@ TEKSTOVI = {
         "footer_text": "Like the Chef? Support him!",
         "donate_button": "☕ Buy me a coffee (Donate)",
         "credits":"Made by Filip (20% Digital)",
-        "version":"Version 1.0 Stable",
+        "version":"Version 0.9 beta",
         "ai_prompt":"""
         You are an experienced chef. User has: {namirnice}. Wants: {vrsta_obroka}.
         Write exactly ONE recipe in English.
@@ -80,102 +79,100 @@ TEKSTOVI = {
         -Proteins:
         -Carbs:
         -Fats:
-        If uncertain,clearly state it is an estimate.
+        If uncertain, clearly state it is an estimate.
         Use standard culinary terminology only.
-        Do not add intro text,notes, or extra sections.
+        Do not add intro text, notes, or extra sections.
         """
-        
-        
+
     }
 }
 
 # --- LOGIKA ZA JEZIK (MEMORIJA) ---
-if "jezik" not in st.session_state:
-    st.session_state.jezik = "EN"
+if 'jezik' not in st.session_state:
+    st.session_state.jezik = 'EN' # Početni jezik
 
+# Radio gumb na vrhu
 odabrani_jezik = st.radio(
-    "Language / Jezik:",
-    ("HR", "EN"),
+    TEKSTOVI[st.session_state.jezik]["language_label"],
+    ('HR', 'EN'),
     horizontal=True,
-    key="odabrani_jezik",
-    index=0 if st.session_state.jezik == "HR" else 1,
+    index=0 if st.session_state.jezik == 'HR' else 1
 )
 
-st.session_state.jezik = odabrani_jezik
+# Ako se promijeni jezik, osvježi stranicu
+if odabrani_jezik != st.session_state.jezik:
+    st.session_state.jezik = odabrani_jezik
+    st.rerun()
+
 # KRATICA: 't' sada sadrži sve tekstove za trenutni jezik
 t = TEKSTOVI[st.session_state.jezik]
-if "zadnji_recepti" not in st.session_state:
-    st.session_state.zadnji_recepti = []
 
 
 # ---  FUNKCIJA (MOZAK) ---
 def generiraj_recept(namirnice, vrsta_obroka, jezik):
     if not my_api_key:
-        return "⚠️ Nema API ključa!" if jezik == 'HR' else "⚠️ Missing API Key!"
-
+       yield "⚠️ Nema API ključa!" if jezik == 'HR' else "⚠️ Missing API Key!"
+       return
     try:
         client = Groq(api_key=my_api_key)
 
         t_local=TEKSTOVI[jezik]
-        prompt = t_local["ai_prompt"].format(namirnice=namirnice, vrsta_obroka=vrsta_obroka)
-            
-        
-
-
+        prompt = t_local["ai_prompt"].format(namirnice=namirnice, vrsta_obroka=vrsta_obroka)    
         chat_completion = client.chat.completions.create(
             messages=[{"role": "user", "content": prompt}],
             model="llama-3.3-70b-versatile",
-            temperature=0.0
+            temperature=0.1,
+            stream=True 
         )
-        return chat_completion.choices[0].message.content
+        for chunk in chat_completion:
+            tekst=chunk.choices[0].delta.content
+            if tekst is not None:
+                yield tekst
     except AuthenticationError as e:
-        return "Neispravan API ključ!" if jezik == 'HR' else "Invalid API Key!"
+        yield "Neispravan API ključ!" if jezik == 'HR' else "Invalid API Key!"
+        return
     except RateLimitError as e:
-        return "Previše zahtjeva, pričekaj minutu!" if jezik == 'HR' else "Too many requests, wait a minute!"
+        yield "Previše zahtjeva, pričekaj minutu!" if jezik == 'HR' else "Too many requests, wait a minute!"
+        return
     except APIConnectionError as e:
-        return "Nema interneta ili server nedostupan!" if jezik == 'HR' else "No internet or server unavailable!"
+        yield "Nema interneta ili server nedostupan!" if jezik == 'HR' else "No internet or server unavailable!"
+        return
     except APITimeoutError as e:
-        return "Zahtjev predugo traje!" if jezik == 'HR' else "Request took too long!"
+        yield "Zahtjev predugo traje!" if jezik == 'HR' else "Request took too long!"
+        return
     except APIError as e:
-        return "Problem sa API-jem!" if jezik == 'HR' else "Problem with API!"
-        
+        yield "Problem sa API-jem!" if jezik == 'HR' else "Problem with API!"
+        return
     except Exception as e:
-        st.error(f"Debug: {type(e).__name__}:{e}")
-        return "Dogodila se neočekivana greška. Probajte ponovno." if jezik == 'HR' else "An unexpected error occurred. Please try again."
-    
+        yield f"Error: {str(e)}"
+        return
 
-
-#  UI
+#  PRIKAZ SUČELJA (UI) 
 st.title(t["title"])
 st.caption(t["caption"])
 st.info(t["instructions"])
 
 st.markdown("---")
 
-
 col1, col2 = st.columns([2, 1])
 
 with col1:
-    namirnice_input = st.text_input(
-        t["input_label"],
-        placeholder=t["placeholder"],
-        key="ingredients_input",
-    )
+    namirnice_input = st.text_input(t["input_label"], placeholder=t["placeholder"])
 
 with col2:
-    vrsta_obroka = st.selectbox(
-        t["meal_label"],
-        t["meal_options"],
-        key="meal_select",
-    )
+    vrsta_obroka = st.selectbox(t["meal_label"], t["meal_options"])
 
 st.markdown("")
 gumb = st.button(t["button"], type="primary", use_container_width=True)
+
 # --- 6. AKCIJA ---
+
 if gumb:
     namirnice_clean = namirnice_input.strip()
-
+    if namirnice_clean:
+        st.session_state.pop("recipe_rating", None)
     if not namirnice_clean:
+        st.session_state.trenutni_recept = None
         st.warning(t["warning"])
     elif len(namirnice_clean) < 3:
         st.warning("Upiši barem 3 znaka!" if st.session_state.jezik == "HR" else "Type at least 3 characters!")
@@ -183,32 +180,28 @@ if gumb:
         st.warning("Unos je predug (max 300 znakova)." if st.session_state.jezik == "HR" else "Input is too long (max 300 characters).")
     else:
         with st.spinner(t["spinner"]):
-            recept = generiraj_recept(namirnice_clean, vrsta_obroka, st.session_state.jezik)
-            st.session_state.zadnji_recepti.insert(0, recept)
-            st.session_state.zadnji_recepti = st.session_state.zadnji_recepti[:5]
-
-            st.markdown("---")
-            st.success(t["success"])
-            st.text(recept)
-            st.download_button(
-                label=t["download_button"],
-                data=recept,
-                file_name="AI_Kuhar_Recept.txt",
-                mime="text/plain",
-            )
-
-if st.session_state.zadnji_recepti:
+            recept = st.write_stream(generiraj_recept(namirnice_clean, vrsta_obroka, st.session_state.jezik))
+            st.session_state.trenutni_recept = recept
+    
+# Ocjenjivanje i zvjezdice            
+if "zadnji_recepti" not in st.session_state:
+    st.session_state.zadnji_recepti=[]            
+if "trenutni_recept" not in st.session_state:
+    st.session_state.trenutni_recept=None
+if  st.session_state.trenutni_recept:
     st.markdown("---")
-    st.subheader("Zadnji recepti" if st.session_state.jezik == "HR" else "Recent recipes")
+    st.success(t["success"])
+    ocjena=st.feedback("stars",key="recipe_rating")
+    if ocjena is not None:
+        st.write(f"Ocjena: {ocjena+1}/5 ⭐")
+    
+    st.download_button(
+        label=t["download_button"],
+        data=st.session_state.trenutni_recept,
+        file_name="AI_Kuhar_Recept.txt",
+        mime="text/plain"
+    )
 
-    for i, r in enumerate(st.session_state.zadnji_recepti, 1):
-        naslov = f"Recept {i}" if st.session_state.jezik == "HR" else f"Recipe {i}"
-        with st.expander(naslov):
-            st.markdown(r)
-
-    if st.button("Očisti povijest" if st.session_state.jezik == "HR" else "Clear history"):
-        st.session_state.zadnji_recepti = []
-        st.rerun()
 # --- FOOTER (DONACIJE) ---
 st.write("")
 st.write("")
@@ -222,7 +215,6 @@ col_l, col_s, col_d = st.columns([1, 2, 1])
 with col_s:
     st.write(t["footer_text"])
     st.link_button(t["donate_button"], url=paypal_url)
-    
 #--- POTPIS AUTORA i Verzija ---
 st.write("") 
 st.markdown(
@@ -232,4 +224,3 @@ st.markdown(
     """,
     unsafe_allow_html=True
 )
-
