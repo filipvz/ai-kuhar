@@ -41,7 +41,7 @@ TEKSTOVI = {
         "footer_text": "Sviđa ti se kuhar? Podrži ga!!!",
         "donate_button": "☕ Kupi mi kavu (Doniraj)",
         "credits":"Made by Filip (20% Digital)",
-        "version":"Version 0.9 beta",
+        "version":"Version 1.0",
         "ai_prompt":"""
         Ti si iskusni kuhar. Korisnik ima: {namirnice}. Želi: {vrsta_obroka}.
         Napiši točno JEDAN recept na hrvatskom jeziku.
@@ -81,7 +81,7 @@ TEKSTOVI = {
         "footer_text": "Like the Chef? Support him!",
         "donate_button": "☕ Buy me a coffee (Donate)",
         "credits":"Made by Filip (20% Digital)",
-        "version":"Version 0.9 beta",
+        "version":"Version 1.0",
         "ai_prompt":"""
         You are an experienced chef. User has: {namirnice}. Wants: {vrsta_obroka}.
         Write exactly ONE recipe in English.
@@ -261,3 +261,4 @@ st.markdown(
     """,
     unsafe_allow_html=True
 )
+
