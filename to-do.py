@@ -1,5 +1,15 @@
 import streamlit as st
 from groq import Groq,AuthenticationError, RateLimitError,APIConnectionError,APIError,APITimeoutError
+import gspread
+from google.oauth2.service_account import Credentials
+
+def spoji_sheets():
+    scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
+    creds = Credentials.from_service_account_info(st.secrets["gcp_service_account"], scopes=scope)
+    client = gspread.authorize(creds)
+    sheet = client.open("AI Kuhar Ocjene").sheet1
+    return sheet
+
 
 
 #  POSTAVKE I KLJUČEVI ---
@@ -36,14 +46,19 @@ TEKSTOVI = {
         Ti si iskusni kuhar. Korisnik ima: {namirnice}. Želi: {vrsta_obroka}.
         Napiši točno JEDAN recept na hrvatskom jeziku.
         Format mora biti:
+
         Naslov:
+
         Sastojci:
+
         Priprema:
+
         Nutritivne informacije (okvirno po porciji):
         -Kalorije:
         -Proteini:
         -Ugljeni hidrati:
         -Masti:
+
         Ako procjena nije sigurna, napiši da je okvirna.
         Koristi samo standardne kulinarske izraze.
         Ne dodavaj uvod, napomene ni dodatne sekcije.
@@ -71,14 +86,19 @@ TEKSTOVI = {
         You are an experienced chef. User has: {namirnice}. Wants: {vrsta_obroka}.
         Write exactly ONE recipe in English.
         Required format:
+
         Title:
+
         Ingredients:
+
         Instructions:
+
         Nutritional information (per serving):
         -Calories:
         -Proteins:
         -Carbs:
         -Fats:
+        
         If uncertain, clearly state it is an estimate.
         Use standard culinary terminology only.
         Do not add intro text, notes, or extra sections.
@@ -169,6 +189,7 @@ gumb = st.button(t["button"], type="primary", use_container_width=True)
 
 if gumb:
     namirnice_clean = namirnice_input.strip()
+    st.session_state.namirnice_clean = namirnice_clean
     if namirnice_clean:
         st.session_state.pop("recipe_rating", None)
     if not namirnice_clean:
@@ -191,9 +212,25 @@ if "trenutni_recept" not in st.session_state:
 if  st.session_state.trenutni_recept:
     st.markdown("---")
     st.success(t["success"])
+    st.markdown("Ocijenite recept: ")
     ocjena=st.feedback("stars",key="recipe_rating")
     if ocjena is not None:
         st.write(f"Ocjena: {ocjena+1}/5 ⭐")
+        try:
+            sheet=spoji_sheets()
+            from datetime import datetime
+            sheet.append_row([
+                datetime.now().strftime("%Y-%m-%d %H:%M"),
+                st.session_state.namirnice_clean,
+                vrsta_obroka,
+                ocjena + 1,
+                st.session_state.jezik
+                
+                
+            ])
+            st.success("Ocjena spremljena! ✅")
+        except Exception as e:
+            st.warning(f"Greška pri spremanju ocjene: {e}")
     
     st.download_button(
         label=t["download_button"],
